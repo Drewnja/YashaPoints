@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Балл Вкусно и точка</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #title {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #price {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="title">Балл Вкусно и точка</div>
+    <div id="price">150.00 Балл финашки</div>
+    <canvas id="graph" width="800" height="400"></canvas>
+
+    <script>
+        const canvas = document.getElementById('graph');
+        const ctx = canvas.getContext('2d');
+        const priceDisplay = document.getElementById('price');
+
+        let data = [];
+        let currentPrice = 150;
+
+        function generatePrice() {
+            currentPrice += (Math.random() - 0.5) * 2;
+            return currentPrice;
+        }
+
+        function updateGraph() {
+            const newPrice = generatePrice();
+            data.push(newPrice);
+            if (data.length > 100) data.shift();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
+
+            const step = canvas.width / (data.length - 1);
+            const scale = canvas.height / (Math.max(...data) - Math.min(...data));
+
+            data.forEach((price, index) => {
+                const x = index * step;
+                const y = canvas.height - (price - Math.min(...data)) * scale;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+
+            ctx.stroke();
+            priceDisplay.textContent = `${newPrice.toFixed(2)} Балл финашки`;
+        }
+
+        setInterval(updateGraph, 1000);
+    </script>
+</body>
+</html>
