@@ -4,16 +4,17 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from fastapi.responses import FileResponse
+import ssl
 
 app = FastAPI()
 
-# Add CORS middleware
+# Update CORS middleware to allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],  # Allow all origins for now
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Global variable to store the last 100 numbers
@@ -77,5 +78,10 @@ async def websocket_endpoint(websocket: WebSocket):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    
+    # Use the current directory for SSL certificates
+    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    ssl_context.load_cert_chain("cert.pem", "key.pem")
+    
+    uvicorn.run(app, host="0.0.0.0", port=8443, ssl=ssl_context)
 
