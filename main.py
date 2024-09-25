@@ -51,7 +51,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             # Generate a random number between 1 and 100
-            random_number = random.randint(1, 100)
+            random_number = random.randint(1, 10) / 3
             
             # Add the new number to the list
             last_100_numbers.append(random_number)
