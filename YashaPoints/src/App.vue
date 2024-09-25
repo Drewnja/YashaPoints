@@ -21,6 +21,9 @@ export default {
     let reconnectTimeout = null;
     let chart = null;
 
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const apiUrl = isDevelopment ? 'http://localhost:8000' : 'https://94.131.123.104:8443';
+
     const createChart = () => {
       if (chart) {
         chart.destroy();
@@ -65,7 +68,7 @@ export default {
 
     const fetchInitialData = async () => {
       try {
-        const response = await fetch('http://localhost:8000/initial-data');
+        const response = await fetch(`${apiUrl}/initial-data`);
         const data = await response.json();
         priceData.value = data;
         if (data.length > 0) {
@@ -82,7 +85,8 @@ export default {
         ws.close();
       }
 
-      ws = new WebSocket("ws://localhost:8000/ws");
+      const wsUrl = isDevelopment ? 'ws://localhost:8000/ws' : 'wss://94.131.123.104:8443/ws';
+      ws = new WebSocket(wsUrl);
 
       ws.onopen = (event) => {
         console.log("WebSocket connection established");
