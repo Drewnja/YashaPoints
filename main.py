@@ -11,7 +11,7 @@ app = FastAPI()
 # Update CORS middleware to allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for now
+    allow_origins=["https://drewnja.xyz", "https://94.131.123.104"],  # Allow all origins for now
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
