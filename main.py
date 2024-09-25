@@ -26,7 +26,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 last_100_numbers.pop(0)
             
             # Send the last 100 numbers as an array
-            await websocket.send_text(str(last_100_numbers))
+            await websocket.send_text(last_100_numbers)
             
             # Wait for 1 seconds before generating the next number
             await asyncio.sleep(1)
