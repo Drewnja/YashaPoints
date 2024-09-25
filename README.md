@@ -52,6 +52,14 @@ Follow these steps to set up and run the project:
 
 This frontend application requires a backend server to provide real-time data. Ensure your backend server is running and accessible at `http://localhost:8000`.
 
+To start the backend server using Uvicorn, run the following command in your backend project directory:
+
+```
+uvicorn main:app --reload
+```
+
+This command starts the Uvicorn server with auto-reload enabled, which is useful for development. Make sure you have Uvicorn installed (`pip install uvicorn`) before running this command.
+
 ## Project Structure
 
 - `src/App.vue`: The main component containing the chart and WebSocket logic
