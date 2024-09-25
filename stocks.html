@@ -43,13 +43,26 @@
         let data = [];
         let currentPrice = 150;
 
-        function generatePrice() {
-            currentPrice += (Math.random() - 0.5) * 2;
-            return currentPrice;
-        }
+        const ws = new WebSocket("ws://localhost:8000/ws");
 
-        function updateGraph() {
-            const newPrice = generatePrice();
+        ws.onopen = function(event) {
+            console.log("WebSocket connection established");
+        };
+
+        ws.onmessage = function(event) {
+            const newPrice = parseFloat(event.data);
+            updateGraph(newPrice);
+        };
+
+        ws.onclose = function(event) {
+            console.log("WebSocket closed: ", event);
+        };
+
+        ws.onerror = function(error) {
+            console.log("WebSocket error: ", error);
+        };
+
+        function updateGraph(newPrice) {
             data.push(newPrice);
             if (data.length > 100) data.shift();
 
@@ -74,8 +87,6 @@
             ctx.stroke();
             priceDisplay.textContent = `${newPrice.toFixed(2)} Балл финашки`;
         }
-
-        setInterval(updateGraph, 1000);
     </script>
 </body>
 </html>
