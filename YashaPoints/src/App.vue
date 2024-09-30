@@ -2,151 +2,168 @@
   <div id="app">
     <h1>{{ title }}</h1>
     <p>{{ currentPrice }} Балл финашки</p>
-    <canvas ref="graph" width="800" height="400"></canvas>
+    <div class="chart-container" ref="chartContainer"></div>
+    <p v-if="connectionStatus" :class="connectionStatus.toLowerCase()">
+      {{ connectionStatus }}
+    </p>
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
-import Chart from 'chart.js/auto';
+import { createChart } from 'lightweight-charts';
 
 export default {
   name: 'App',
   setup() {
     const title = ref('Балл Вкусно и точка');
     const currentPrice = ref(0);
-    const graph = ref(null);
+    const chartContainer = ref(null);
     const priceData = ref([]);
-    let ws = null;
-    let reconnectTimeout = null;
     let chart = null;
+    let candleSeries = null;
+    let socket = null;
+    let previousPrice = null;
 
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const apiUrl = isDevelopment ? 'http://localhost:8000' : 'https://94.131.123.104:8443';
+    const connectionStatus = ref('');
 
-    const createChart = () => {
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const wsProtocol = isDevelopment ? 'ws' : 'wss';
+    const wsHost = isDevelopment ? 'localhost:8443' : '94.131.123.104:8443';
+    const wsUrl = `${wsProtocol}://${wsHost}/ws`;
+
+    const createCandlestickChart = () => {
       if (chart) {
-        chart.destroy();
+        chart.remove();
       }
-      const ctx = graph.value.getContext('2d');
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: Array.from({ length: priceData.value.length }, (_, i) => i + 1),
-          datasets: [{
-            label: 'Балл финашки',
-            data: priceData.value,
-            borderColor: '#00ff00',
-            tension: 0.1
-          }]
+
+      chart = createChart(chartContainer.value, {
+        width: chartContainer.value.clientWidth,
+        height: chartContainer.value.clientHeight,
+        layout: {
+          background: { type: 'solid', color: '#1a1a1a' },
+          textColor: '#d1d4dc',
         },
-        options: {
-          responsive: true,
-          animation: false,
-          scales: {
-            y: {
-              beginAtZero: false,
-              suggestedMin: Math.min(...priceData.value) - 5,
-              suggestedMax: Math.max(...priceData.value) + 5
-            }
-          }
-        }
+        grid: {
+          vertLines: { color: '#2B2B43' },
+          horzLines: { color: '#2B2B43' },
+        },
+        crosshair: {
+          mode: 0,
+        },
+        rightPriceScale: {
+          borderColor: '#2B2B43',
+        },
+        timeScale: {
+          borderColor: '#2B2B43',
+          timeVisible: true,
+          secondsVisible: false,
+        },
       });
+
+      candleSeries = chart.addCandlestickSeries({
+        upColor: '#26a69a',
+        downColor: '#ef5350',
+        borderVisible: false,
+        wickUpColor: '#26a69a',
+        wickDownColor: '#ef5350',
+      });
+
+      updateChart();
     };
 
     const updateChart = () => {
-      if (chart) {
-        chart.data.labels = Array.from({ length: priceData.value.length }, (_, i) => i + 1);
-        chart.data.datasets[0].data = priceData.value;
-        chart.options.scales.y.suggestedMin = Math.min(...priceData.value) - 5;
-        chart.options.scales.y.suggestedMax = Math.max(...priceData.value) + 5;
-        chart.update();
-      } else {
-        createChart();
-      }
-    };
-
-    const fetchInitialData = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/initial-data`);
-        const data = await response.json();
-        priceData.value = data;
-        if (data.length > 0) {
-          currentPrice.value = data[data.length - 1].toFixed(2);
-        }
-        updateChart();
-      } catch (error) {
-        console.error('Error fetching initial data:', error);
+      if (candleSeries && priceData.value.length > 0) {
+        candleSeries.setData(priceData.value);
+        const lastCandle = priceData.value[priceData.value.length - 1];
+        currentPrice.value = lastCandle.close.toFixed(2);
+        chart.timeScale().fitContent();
       }
     };
 
     const connectWebSocket = () => {
-      if (ws) {
-        ws.close();
-      }
+      connectionStatus.value = 'Connecting...';
+      console.log('Attempting to connect to WebSocket:', wsUrl);
+      socket = new WebSocket(wsUrl);
 
-      const wsUrl = isDevelopment ? 'ws://localhost:8000/ws' : 'wss://94.131.123.104:8443/ws';
-      ws = new WebSocket(wsUrl);
-
-      ws.onopen = (event) => {
-        console.log("WebSocket connection established");
-        if (reconnectTimeout) {
-          clearTimeout(reconnectTimeout);
-          reconnectTimeout = null;
-        }
+      socket.onopen = () => {
+        console.log('WebSocket connection established');
+        connectionStatus.value = 'Connected';
       };
 
-      ws.onmessage = (event) => {
-        try {
-          const newPrices = JSON.parse(event.data);
-          priceData.value = newPrices;
-          if (newPrices.length > 0) {
-            currentPrice.value = newPrices[newPrices.length - 1].toFixed(2);
-          }
+      socket.onmessage = (event) => {
+        const newData = JSON.parse(event.data);
+        if (Array.isArray(newData) && newData.length > 0) {
+          priceData.value = newData.map((price, index) => {
+            const time = Math.floor(Date.now() / 1000) - (newData.length - 1 - index);
+            const open = previousPrice !== null ? previousPrice : price;
+            const close = price;
+            const highLowOffset = Math.abs((close - open) * 0.1); // 10% of the price difference
+
+            const candlestick = {
+              time,
+              open,
+              close,
+              high: Math.max(open, close) + highLowOffset,
+              low: Math.min(open, close) - highLowOffset
+            };
+
+            previousPrice = close;
+            return candlestick;
+          });
           updateChart();
-        } catch (error) {
-          console.error("Error parsing WebSocket data:", error);
         }
       };
 
-      ws.onclose = (event) => {
-        console.log("WebSocket closed:", event);
-        reconnectTimeout = setTimeout(connectWebSocket, 5000);
+      socket.onclose = (event) => {
+        console.log('WebSocket connection closed:', event.reason);
+        connectionStatus.value = 'Disconnected. Retrying...';
+        setTimeout(connectWebSocket, 5000);
       };
 
-      ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        connectionStatus.value = 'Connection Error';
       };
     };
 
-    onMounted(async () => {
-      await fetchInitialData();
+    onMounted(() => {
+      createCandlestickChart();
       connectWebSocket();
+
+      window.addEventListener('resize', createCandlestickChart);
     });
 
     onUnmounted(() => {
-      if (ws) {
-        ws.close();
-      }
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
+      if (socket) {
+        socket.close();
       }
       if (chart) {
-        chart.destroy();
+        chart.remove();
       }
+      window.removeEventListener('resize', createCandlestickChart);
     });
 
     return {
       title,
       currentPrice,
-      graph,
-      priceData
+      chartContainer,
+      connectionStatus,
     };
   }
 }
 </script>
 
 <style>
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1a1a1a;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
 #app {
   background-color: #1a1a1a;
   color: #ffffff;
@@ -154,23 +171,61 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+  padding: 5vh 5vw;
+  box-sizing: border-box;
 }
 
 h1 {
-  font-size: 36px;
-  margin-bottom: 10px;
+  font-size: 6vw;
+  margin-bottom: 2vh;
   text-align: center;
 }
 
 p {
-  font-size: 48px;
-  margin-bottom: 20px;
+  font-size: 8vw;
+  margin-bottom: 3vh;
+  text-align: center;
 }
 
-canvas {
-  border: 1px solid #333;
+.chart-container {
+  width: 100%;
+  height: 60vh;
+  max-height: 400px;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 36px;
+  }
+
+  p {
+    font-size: 48px;
+  }
+
+  .chart-container {
+    max-width: 800px;
+  }
+}
+
+.connected {
+  color: #4caf50;
+}
+
+.disconnected {
+  color: #f44336;
+}
+
+.connecting {
+  color: #ffc107;
+}
+
+.connection-error {
+  color: #ff5722;
 }
 </style>
+
+
+

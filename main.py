@@ -5,13 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 from fastapi.responses import FileResponse
 import ssl
+import os
 
 app = FastAPI()
 
 # Update CORS middleware to allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://drewnja.xyz", "https://94.131.123.104"],  # Allow all origins for now
+    allow_origins=["https://drewnja.xyz", "https://94.131.123.104", "http://localhost:5173", "http://localhost:8080"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -79,9 +80,10 @@ async def websocket_endpoint(websocket: WebSocket):
 if __name__ == "__main__":
     import uvicorn
     
-    # Use the current directory for SSL certificates
-    ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-    ssl_context.load_cert_chain("cert.pem", "key.pem")
-    
-    uvicorn.run(app, host="0.0.0.0", port=8443, ssl=ssl_context)
+    if os.environ.get('ENVIRONMENT') == 'production':
+        ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+        ssl_context.load_cert_chain("cert.pem", "key.pem")
+        uvicorn.run(app, host="0.0.0.0", port=8443, ssl=ssl_context)
+    else:
+        uvicorn.run(app, host="0.0.0.0", port=8080)  # Changed port to 8080 for development
 

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "chart.js": "^4.4.4",
+    "lightweight-charts": "^4.2.0",
     "vue": "^3.4.29"
   },
   "devDependencies": {
