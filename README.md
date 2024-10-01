@@ -48,6 +48,14 @@ Follow these steps to set up and run the project:
    
    Open your web browser and navigate to `http://localhost:8080` (or the port shown in your terminal).
 
+
+## Database Configuration
+The backend server relies on a database connection, which is configured via the .env file. You need to update the DATABASE_URL environment variable in the .env file with your actual database credentials.
+```
+DATABASE_URL=postgresql://name:pass@host/db_name
+```
+Replace name with your database username, pass with your password, host with the database host, and db_name with the name of your database.
+
 ## Backend Setup
 
 This frontend application requires a backend server to provide real-time data. Ensure your backend server is running and accessible at `http://localhost:8000`.
