@@ -1,0 +1,79 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ZContent//ZapCalLib 1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:Europe/Moscow
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART:20241001T101000
+DTEND:20241001T114000
+UID:2d75b9ccf126d3d0e5b1ff48184d1330-person-7004dcb2-88e5-11e8-b636-005056b
+ f5929@ruz.fa.ru
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-DEVEXPRESS-STATUS:FREE
+DTSTAMP:20240930T213738
+SUMMARY:Безопасность операционных систем
+LOCATION:В4/3501/4-й Вешняковский проезд\, 4
+DESCRIPTION:Безопасность операционных систем\nЕгоров Е.В. \nИБ23-6 \nПракти
+ ческие (семинарские) занятия \n:  \n<> \nВ4/3501/4-й Вешняковский проезд\,
+  4
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20241001T115000
+DTEND:20241001T132000
+UID:825146bafe2245bbfccb4de0eb1cd8aa-person-7004dcb2-88e5-11e8-b636-005056b
+ f5929@ruz.fa.ru
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-DEVEXPRESS-STATUS:FREE
+DTSTAMP:20240930T213738
+SUMMARY:Безопасность операционных систем
+LOCATION:В4/3501/4-й Вешняковский проезд\, 4
+DESCRIPTION:Безопасность операционных систем\nЕгоров Е.В. \nИБ23-7 \nПракти
+ ческие (семинарские) занятия \n:  \n<> \nВ4/3501/4-й Вешняковский проезд\,
+  4
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20241001T140000
+DTEND:20241001T153000
+UID:6499144af8d7f189dda071484e38dd97-person-7004dcb2-88e5-11e8-b636-005056b
+ f5929@ruz.fa.ru
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-DEVEXPRESS-STATUS:FREE
+DTSTAMP:20240930T213738
+SUMMARY:Безопасность операционных систем
+LOCATION:В4/3501/4-й Вешняковский проезд\, 4
+DESCRIPTION:Безопасность операционных систем\nЕгоров Е.В. \nИБ23-4 \nПракти
+ ческие (семинарские) занятия \n:  \n<> \nВ4/3501/4-й Вешняковский проезд\,
+  4
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20241004T172000
+DTEND:20241004T185000
+UID:95477cd22e86a30b85daa16c7cddd590-person-7004dcb2-88e5-11e8-b636-005056b
+ f5929@ruz.fa.ru
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-DEVEXPRESS-STATUS:FREE
+DTSTAMP:20240930T213738
+SUMMARY:Защита информации от утечки по техническим каналам
+LOCATION:В4/ауд.3405(лаб. ИБ)/4-й Вешняковский проезд\, 4
+DESCRIPTION:Защита информации от утечки по техническим каналам\nЕгоров Е.В.
+  \nИБ22-3 \nПрактические (семинарские) занятия \n:  \n<> \nВ4/ауд.3405(лаб
+ . ИБ)/4-й Вешняковский проезд\, 4
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20241004T185500
+DTEND:20241004T202500
+UID:f9ad924e358200c9043e57f4cddea528-person-7004dcb2-88e5-11e8-b636-005056b
+ f5929@ruz.fa.ru
+X-MICROSOFT-CDO-BUSYSTATUS:FREE
+X-DEVEXPRESS-STATUS:FREE
+DTSTAMP:20240930T213738
+SUMMARY:Защита информации от утечки по техническим каналам
+LOCATION:В4/ауд.3405(лаб. ИБ)/4-й Вешняковский проезд\, 4
+DESCRIPTION:Защита информации от утечки по техническим каналам\nЕгоров Е.В.
+  \nИБ22-4 \nПрактические (семинарские) занятия \n:  \n<> \nВ4/ауд.3405(лаб
+ . ИБ)/4-й Вешняковский проезд\, 4
+END:VEVENT
+END:VCALENDAR
