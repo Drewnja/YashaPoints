@@ -29,7 +29,7 @@ export default {
 
     const isDevelopment = process.env.NODE_ENV === 'development';
     const wsProtocol = isDevelopment ? 'ws' : 'wss';
-    const wsHost = isDevelopment ? 'localhost:8443' : '94.131.123.104:8443';
+    const wsHost = isDevelopment ? 'localhost:8443' : 'turk1.drewnja.xyz:8443';
     const wsUrl = `${wsProtocol}://${wsHost}/ws`;
 
     const createCandlestickChart = () => {
