@@ -259,7 +259,7 @@ async def data_ingestion_task():
     while True:
         try:
             # Path to the iCalendar file (replace with the actual path)
-            ical_path = "coefficents/RUZ_30.09.2024-06.10.2024_.ics"
+            ical_path = "coefficients/schedule.ics"
             
             # Current date in YYYYMMDD format
             today = datetime.now().strftime('%Y%m%d')
