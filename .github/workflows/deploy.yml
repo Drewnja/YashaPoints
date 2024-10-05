@@ -40,7 +40,7 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
 
-    - name: Deploy to Ubuntu server
+    - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
@@ -50,10 +50,8 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
           docker stop yasha-points || true
           docker rm yasha-points || true
-          docker run -d --name yasha-points -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
-          
-          # Debug: Check container logs
-          docker logs yasha-points
-          
-          # Debug: List installed Python packages in the container
-          docker exec yasha-points pip list
+          docker run -d --name yasha-points \
+            -p 8000:8000 \
+            --add-host=host.docker.internal:host-gateway \
+            -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
