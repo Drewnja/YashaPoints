@@ -11,6 +11,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: List directory contents
+      run: ls -la
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
@@ -37,6 +40,7 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app:latest
           docker stop fastapi-app || true
           docker rm fastapi-app || true
+          docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app:latest
           
           # Debug: Check container logs
           docker logs fastapi-app
