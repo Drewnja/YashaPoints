@@ -38,7 +38,7 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
 
     - name: Deploy to Ubuntu server
       uses: appleboy/ssh-action@master
@@ -47,13 +47,13 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app:latest
-          docker stop fastapi-app || true
-          docker rm fastapi-app || true
-          docker run -d --name fastapi-app -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/fastapi-app:latest
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
+          docker stop yasha-points || true
+          docker rm yasha-points || true
+          docker run -d --name yasha-points -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/yasha-points:latest
           
           # Debug: Check container logs
-          docker logs fastapi-app
+          docker logs yasha-points
           
           # Debug: List installed Python packages in the container
-          docker exec fastapi-app pip list
+          docker exec yasha-points pip list
