@@ -454,4 +454,4 @@ if __name__ == "__main__":
             logging.error("SSL certificate or key file not found. Running without SSL.")
             uvicorn.run(app, host="0.0.0.0", port=8443)
     else:
-        uvicorn.run(app, host="0.0.0.0", port=8080)
+        uvicorn.run(app, host="0.0.0.0", port=8000)
