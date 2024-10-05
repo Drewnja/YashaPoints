@@ -23,6 +23,15 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Debug - Print working directory
+      run: pwd
+
+    - name: Debug - List directory contents
+      run: ls -la
+
+    - name: Debug - Find requirements.txt
+      run: find . -name requirements.txt
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:

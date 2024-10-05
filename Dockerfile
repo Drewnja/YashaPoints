@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements file
-COPY ./requirements.txt requirements.txt
+# Copy requirements file (using wildcard to be more flexible)
+COPY *requirements*.txt ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
