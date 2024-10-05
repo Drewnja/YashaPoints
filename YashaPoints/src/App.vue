@@ -6,6 +6,13 @@
     <p v-if="connectionStatus" :class="connectionStatus.toLowerCase()">
       {{ connectionStatus }}
     </p>
+    <p class="tick-counter">Ticks: {{ tickCount }}</p>
+    <div class="raw-data-container">
+      <button @click="toggleRawData" class="toggle-button">
+        {{ showRawData ? 'Hide' : 'Show' }} Raw Data
+      </button>
+      <pre v-if="showRawData" class="raw-data">{{ rawData }}</pre>
+    </div>
   </div>
 </template>
 
@@ -26,11 +33,11 @@ export default {
     let previousPrice = null;
 
     const connectionStatus = ref('');
+    const tickCount = ref(0);
+    const rawData = ref('');
+    const showRawData = ref(false);
 
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const wsProtocol = isDevelopment ? 'ws' : 'wss';
-    const wsHost = isDevelopment ? 'localhost:8443' : 'turk1.drewnja.xyz:8443';
-    const wsUrl = `${wsProtocol}://${wsHost}/ws`;
+    const wsUrl = 'wss://turk1.drewnja.xyz:8443/ws';
 
     const createCandlestickChart = () => {
       if (chart) {
@@ -112,6 +119,8 @@ export default {
             return candlestick;
           });
           updateChart();
+          tickCount.value++; // Increment tick count on each update
+          rawData.value = JSON.stringify(newData, null, 2);
         }
       };
 
@@ -125,6 +134,10 @@ export default {
         console.error('WebSocket error:', error);
         connectionStatus.value = 'Connection Error';
       };
+    };
+
+    const toggleRawData = () => {
+      showRawData.value = !showRawData.value;
     };
 
     onMounted(() => {
@@ -149,6 +162,10 @@ export default {
       currentPrice,
       chartContainer,
       connectionStatus,
+      tickCount,
+      rawData,
+      showRawData,
+      toggleRawData,
     };
   }
 }
@@ -161,7 +178,7 @@ body {
   background-color: #1a1a1a;
   height: 100vh;
   width: 100vw;
-  overflow: hidden;
+  overflow: auto; /* Changed from hidden to auto */
 }
 
 #app {
@@ -172,7 +189,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  height: 100%;
+  min-height: 100vh; /* Changed from height to min-height */
   width: 100%;
   padding: 5vh 5vw;
   box-sizing: border-box;
@@ -224,6 +241,62 @@ p {
 
 .connection-error {
   color: #ff5722;
+}
+
+.raw-data-container {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toggle-button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.raw-data {
+  background-color: #2c2c2c;
+  color: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 14px;
+  width: 100%; /* Added to ensure full width */
+  box-sizing: border-box; /* Added to include padding in width calculation */
+}
+
+@media (max-width: 768px) {
+  .raw-data {
+    font-size: 12px;
+  }
+}
+
+.tick-counter {
+  font-size: 4vw;
+  margin-top: 1vh;
+  color: #888;
+}
+
+@media (min-width: 768px) {
+  .tick-counter {
+    font-size: 24px;
+  }
 }
 </style>
 
